@@ -16,7 +16,9 @@ The following Python packages are required for the toolbox to work properly:
 - [GPUtil](https://pypi.org/project/GPUtil/)
 
 ## Pre-defined operators
-We provide forward and back projectors from the public libraries ASTRA [5] and TIGRE [6]. Both packages has GPU implementations and will require a NVIDIA GPU, however, only ASTRA has a CPU implementation. 
+We provide forward and back projectors from the public libraries ASTRA [5] and TIGRE [6]. Both packages has GPU implementations and will require a NVIDIA GPU, however, only ASTRA has a CPU implementation.
+
+The pre-defined projectors in this code are suited for 2D problems. Therefore, we refer to the _user defined projectors_ if one whishes to solve 3D problems.
 
 ### ASTRA projectors
 
