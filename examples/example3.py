@@ -28,22 +28,29 @@ A           = fp_astra(ex1.CT_ASTRA)                         # The forward proje
 B           = bp_astra(ex1.CT_ASTRA)                         # The back projector
 iter        = 100                                            # Maximum number of iterations
 
-# Use restart with p as a multiplum of the iterations
+# Use restart with p as a divisor of the iterations
+# -----------------------------------------------------------
 p = 5       # Restart parameter, if p = iter we do not use restart. 
-X_BA_p5, R_BA_p5 = BA_GMRES(A,B,b,iter,ex1.CT_ASTRA,p)     # Solving the CT problem with BA-GMRES for p = 5
+X_BA_p5, R_BA_p5 = BA_GMRES(A,B,b,iter,ex1.CT_ASTRA,p)
 
+# Use restart with p not being a divisor of the iterations
+# -----------------------------------------------------------
+p = 6       # Restart parameter, if p = iter or is not included, we do not use restart. 
+X_BA_p6, R_BA_p6 = BA_GMRES(A,B,b,iter,ex1.CT_ASTRA,p)
+
+
+# ===============================================================================================
+#  Plotting of results - Example has ended
+# ===============================================================================================
 # Computing the relative error between the solutions x_i and the true solution
+# Errors for p=5
 res_p5 = np.zeros((iter,1))
 for i in range(0,iter):
     res_p5[i] = np.linalg.norm(ex1.X.reshape(-1) - X_BA_p5[:,i])/np.linalg.norm(ex1.X.reshape(-1))
 val_p5 = np.min(res_p5)
 idx_p5 = np.argmin(res_p5)
 
-# Use restart with p not being a multiplum of the iterations
-p = 6       # Restart parameter, if p = iter or is not included, we do not use restart. 
-X_BA_p6, R_BA_p6 = BA_GMRES(A,B,b,iter,ex1.CT_ASTRA,p)     # Solving the CT problem with BA-GMRES for p = 6
-
-# Computing the relative error between the solutions x_i and the true solution
+# Errors for p=6
 iter_p6 = np.shape(X_BA_p6)[1] - 1
 res_p6 = np.zeros((iter_p6,1))
 for i in range(0,iter_p6):
@@ -51,6 +58,7 @@ for i in range(0,iter_p6):
 val_p6 = np.min(res_p6)
 idx_p6 = np.argmin(res_p6)
 
+# Plotting
 plt.figure()
 plt.plot(range(0,iter),res_p5,'r-')
 plt.plot(range(0,iter_p6),res_p6,'k-')

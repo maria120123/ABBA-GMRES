@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import astra 
 import tigre
+import GPUtil
 from sys import exit
 import time
 
@@ -102,6 +103,12 @@ class ct_astra:
         self.vol_geom  = astra.create_vol_geom(self.N,self.N)
         self.GPU = GPU
 
+        # Check if there is a GPU connected to the host
+        n_device, = np.shape(GPUtil.getAvailable())
+
+        if n_device < 1:
+            raise Exception("No GPUs available.")
+
         # SETUP PROJECTION GEOMETRY
         # Parallel beam geometry
         if proj_geom == 'parallel': 
@@ -114,8 +121,7 @@ class ct_astra:
         # Fan beam geometry
         elif proj_geom == 'fanflat':
             if proj_model == 'linear':
-                print("Fan beam geometry can only handle strip and line")
-                exit()
+                raise Exception("Fan beam geometry can only handle strip and line")
 
             self.proj_geom = astra.create_proj_geom(proj_geom,det_width,N_det,self.proj_angles,source_origin,origin_det)
             if GPU == True:
@@ -123,8 +129,7 @@ class ct_astra:
             else:
                 self.proj_id   = astra.create_projector(proj_model+'_fanflat', self.proj_geom, self.vol_geom)
         else: 
-            print("Projection geometry can only be parallel or fanflat.")
-            exit()
+            raise Exception("Projection geometry can only be parallel or fanflat.")
         
         self.sinogram_id = astra.data2d.create('-sino', self.proj_geom, 0)
         self.recon_id = astra.data2d.create('-vol', self.vol_geom, 0)

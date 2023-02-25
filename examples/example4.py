@@ -26,8 +26,27 @@ B           = bp_astra(ex1.CT_ASTRA)                         # The back projecto
 iter        = 100                                            # Maximum number of iterations
 
 # Using no stopping rule
-X_BA, R_BA = BA_GMRES(A, B, b, iter, ex1.CT_ASTRA)     # Solving the CT problem with BA-GMRES
+# -------------------------------
+X_BA, R_BA = BA_GMRES(A, B, b, iter, ex1.CT_ASTRA)
 
+# Using DP as the stopping rule
+# -------------------------------
+stop_rule   = 'DP'          # The stopping criteria, DP = discrepancy principal
+eta         = np.std(e)     # The noise level, when using DP as stopping criteria
+tau         = 1.02          # Safety factor for DP
+X_BA_dp, R_BA_dp = BA_GMRES(A, B, b, iter, ex1.CT_ASTRA, stop_rule = stop_rule, eta = eta, tau = tau)
+
+# Using NCP as the stopping rule
+# -------------------------------
+stop_rule   = 'NCP'      # The stopping criteria, NCP = normalized cumulative periodogram
+X_BA_ncp, R_BA_ncp = BA_GMRES(A, B, b, iter, ex1.CT_ASTRA, stop_rule = stop_rule, eta = eta, tau = tau)
+
+
+
+
+# ===============================================================================================
+#  Plotting of results - Example has ended
+# ===============================================================================================
 # Computing the relative error between the solutions x_i and the true solution
 res = np.zeros((iter, 1))
 for i in range(0, iter):
@@ -35,13 +54,7 @@ for i in range(0, iter):
 val = np.min(res)
 idx = np.argmin(res)
 
-# Using DP as the stopping rule
-stop_rule   = 'DP'          # The stopping criteria, DP = discrepancy principal
-eta         = np.std(e)     # The noise level, when using DP as stopping criteria
-tau         = 1.02          # Safety factor for DP
-X_BA_dp, R_BA_dp = BA_GMRES(A, B, b, iter, ex1.CT_ASTRA, stop_rule = stop_rule, eta = eta, tau = tau)     # Solving the CT problem with BA-GMRES
-
-# Computing the relative error between the solutions x_i and the true solution
+# Errors of DP
 iter_dp = np.shape(X_BA_dp)[1] - 1
 res_dp = np.zeros((iter_dp,1))
 for i in range(0,iter_dp):
@@ -49,11 +62,7 @@ for i in range(0,iter_dp):
 val_dp = np.min(res_dp)
 idx_dp = np.argmin(res_dp)
 
-# Using DP as the stopping rule
-stop_rule   = 'NCP'      # The stopping criteria, NCP = normalized cumulative periodogram
-X_BA_ncp, R_BA_ncp = BA_GMRES(A, B, b, iter, ex1.CT_ASTRA, stop_rule = stop_rule, eta = eta, tau = tau)     # Solving the CT problem with BA-GMRES
-
-# Computing the relative error between the solutions x_i and the true solution
+# Errors of NCP
 iter_ncp = np.shape(X_BA_ncp)[1] - 1
 res_ncp = np.zeros((iter_ncp,1))
 for i in range(0,iter_ncp):
