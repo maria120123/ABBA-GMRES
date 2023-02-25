@@ -45,6 +45,8 @@ The back projector is automatically chosen when using the ASTRA projectors. The 
 | CPU | Matched       | Matched   |    
 | GPU | Unmatched     | Unmatched |
 
+Note: fan beam geometry is referred to as _fanflat_ in ASTRA.
+
 ### TIGRE projectors
 The following TIGRE forward projectors are supported:
 - _Siddon_ (equivalent to line in ASTRA)
@@ -55,6 +57,8 @@ The following TIGRE backward projectors are supported:
 - _FDK_
 
 Choosing the FDK back projector will result in unmatched normal equations.
+
+Note: fan beam geometry is referred to as _cone_ in TIGRE.
 
 ## User defined operators
 This package allows the user to provide its own forward and backward projectors. The only requirement is that the user defines a custom class where the *\_\_matmul\_\_* function computes a matrix-vector product of the projector given an input vector __x__. 
