@@ -120,8 +120,8 @@ class ct_astra:
 
         # Fan beam geometry
         elif proj_geom == 'fanflat':
-            if proj_model == 'linear':
-                raise Exception("Fan beam geometry can only handle strip and line")
+            if proj_model == 'linear' and GPU == False:
+                raise Exception("Fan beam geometry using the CPU can only handle strip and line")
 
             self.proj_geom = astra.create_proj_geom(proj_geom,det_width,N_det,self.proj_angles,source_origin,origin_det)
             if GPU == True:
