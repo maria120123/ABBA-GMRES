@@ -8,11 +8,21 @@ The ABBA GMRES methods have the following features
 - The possibility to restart GMRES during iterations
 - Automatic stopping criteria: Discrepency Principle [3] and Normalized Cumulative Periodogram [4]
 
+## Package requirements
+
+
 ## Pre-defined operators
-We provide operators from the public libraries ASTRA [5] and TIGRE [6]...
+We provide forward and back projectors from the public libraries ASTRA [5] and TIGRE [6]. Both packages has GPU implementations and will require a NVIDIA GPU, however, only ASTRA has a CPU implementation. 
 
+### ASTRA projectors
 
-### Astra forward projectors
+The following ASTRA projectors are supported:
+- line
+- strip
+- linear
+
+However, depending on the setup- and device type, some of the projectors might not be supported. The following table highlights which types of operators are available for which setups.
+
 |      | Line    | Strip   | Linear |
 |:---- |:--------|:--------|:-------|
 |    __Parallel beam__             ||
@@ -22,16 +32,25 @@ We provide operators from the public libraries ASTRA [5] and TIGRE [6]...
 |CPU   | &check; | &check; | &cross;|
 |GPU   | &cross; | &cross; | &check;|
 
+The back projector is automatically chosen when using the ASTRA projectors. The resulting normal equations will be either matched or unmatched depending on the type of device used for computation, as highlighted by the following table. 
 
-### Unmatchedness ofprojectors
-The unmathced normal equations arise depending on which predefined operators are used. The following table shows a summary of what to expect when using the pre defined operators from this package.
-| Package   | Parallel beam | Fan beam  |
+| Device | Parallel beam | Fan beam  |
 |:----------|:--------------|:----------|
-| ASTRA CPU | Matched       | Matched   |    
-| ASTRA GPU | Unmatched     | Unmatched |
-| TIGRE GPU | Both          | Both      |
+| CPU | Matched       | Matched   |    
+| GPU | Unmatched     | Unmatched |
 
+### TIGRE projectors
+The TIGRE projectors 
 
+The following TIGRE forward projectors are supported
+- Siddon (equivalent to line in ASTRA)
+- interpolated (equivalent to linear in ASTRA)
+
+The following TIGRE backward projectors are supported
+- matched
+- FDK
+
+Choosing the FDK back projector will result in unmatched normal equations.
 
 ## User defined operators
 This package allows the user to provide its own forward and backward projectors.
