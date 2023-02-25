@@ -55,9 +55,18 @@ The following TIGRE backward projectors are supported:
 Choosing the FDK back projector will result in unmatched normal equations.
 
 ## User defined operators
-This package allows the user to provide its own forward and backward projectors.
+This package allows the user to provide its own forward and backward projectors. The only requirement is that the user defines a custom class where the *\_\_matmul\_\_* function computes a matrix-vector product of the projector given an input vector __x__. 
 
+```python
+class custom_projector:
 
+    # Compute matrix-vector product
+    #   y = A*x
+    def __matmul__(self,x):
+        # Your code goes here
+        # y = ...
+        return y
+```
 
 
 ## Examples
