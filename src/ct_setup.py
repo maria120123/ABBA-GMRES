@@ -1,11 +1,8 @@
 # %% ***************************************************** Import Packages *****************************************************
 import numpy as np
-import matplotlib.pyplot as plt
 import astra 
 import tigre
 import GPUtil
-from sys import exit
-import time
 
 # %% ********************************************************** TIGRE **********************************************************
 
