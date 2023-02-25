@@ -9,7 +9,11 @@ The ABBA GMRES methods have the following features
 - Automatic stopping criteria: Discrepency Principle [3] and Normalized Cumulative Periodogram [4]
 
 ## Package requirements
-
+The following Python packages are required for the toolbox to work properly:
+- numpy
+- [astra](https://github.com/astra-toolbox/astra-toolbox)
+- [tigre](https://github.com/CERN/TIGRE)
+- [GPUtil](https://pypi.org/project/GPUtil/)
 
 ## Pre-defined operators
 We provide forward and back projectors from the public libraries ASTRA [5] and TIGRE [6]. Both packages has GPU implementations and will require a NVIDIA GPU, however, only ASTRA has a CPU implementation. 
@@ -17,9 +21,9 @@ We provide forward and back projectors from the public libraries ASTRA [5] and T
 ### ASTRA projectors
 
 The following ASTRA projectors are supported:
-- line
-- strip
-- linear
+- _line_
+- _strip_
+- _linear_
 
 However, depending on the setup- and device type, some of the projectors might not be supported. The following table highlights which types of operators are available for which setups.
 
@@ -40,15 +44,13 @@ The back projector is automatically chosen when using the ASTRA projectors. The 
 | GPU | Unmatched     | Unmatched |
 
 ### TIGRE projectors
-The TIGRE projectors 
+The following TIGRE forward projectors are supported:
+- _Siddon_ (equivalent to line in ASTRA)
+- _interpolated_ (equivalent to linear in ASTRA)
 
-The following TIGRE forward projectors are supported
-- Siddon (equivalent to line in ASTRA)
-- interpolated (equivalent to linear in ASTRA)
-
-The following TIGRE backward projectors are supported
-- matched
-- FDK
+The following TIGRE backward projectors are supported:
+- _matched_
+- _FDK_
 
 Choosing the FDK back projector will result in unmatched normal equations.
 
