@@ -30,19 +30,19 @@ iter        = 100                                            # Maximum number of
 
 # Using no stopping rule
 # -------------------------------
-X_BA, R_BA = BA_GMRES(A, B, b, iter, ct.m, ct.n, ct.N_ang)
+X_BA, R_BA = BA_GMRES(A, B, b, iter, ct.m, ct.n, ct.num_angles)
 
 # Using DP as the stopping rule
 # -------------------------------
 stop_rule   = 'DP'          # The stopping criteria, DP = discrepancy principal
 eta         = np.std(e)     # The noise level, when using DP as stopping criteria
 tau         = 1.02          # Safety factor for DP
-X_BA_dp, R_BA_dp = BA_GMRES(A, B, b, iter, ct.m, ct.n, ct.N_ang, stop_rule = stop_rule, eta = eta, tau = tau)
+X_BA_dp, R_BA_dp = BA_GMRES(A, B, b, iter, ct.m, ct.n, ct.num_angles, stop_rule = stop_rule, eta = eta, tau = tau)
 
 # Using NCP as the stopping rule
 # -------------------------------
 stop_rule   = 'NCP'      # The stopping criteria, NCP = normalized cumulative periodogram
-X_BA_ncp, R_BA_ncp = BA_GMRES(A, B, b, iter, ct.m, ct.n, ct.N_ang, stop_rule = stop_rule, eta = eta, tau = tau)
+X_BA_ncp, R_BA_ncp = BA_GMRES(A, B, b, iter, ct.m, ct.n, ct.num_angles, stop_rule = stop_rule, eta = eta, tau = tau)
 
 
 

@@ -34,12 +34,12 @@ iter        = 100                                            # Maximum number of
 # Use restart with p as a divisor of the iterations
 # -----------------------------------------------------------
 p = 5       # Restart parameter, if p = iter we do not use restart. 
-X_BA_p5, R_BA_p5 = BA_GMRES(A, B, b, iter, ct.m, ct.n, ct.N_ang, p)
+X_BA_p5, R_BA_p5 = BA_GMRES(A, B, b, iter, ct.m, ct.n, ct.num_angles, p)
 
 # Use restart with p not being a divisor of the iterations
 # -----------------------------------------------------------
 p = 6       # Restart parameter, if p = iter or is not included, we do not use restart. 
-X_BA_p6, R_BA_p6 = BA_GMRES(A, B, b, iter, ct.m, ct.n, ct.N_ang, p)
+X_BA_p6, R_BA_p6 = BA_GMRES(A, B, b, iter, ct.m, ct.n, ct.num_angles, p)
 
 
 # ===============================================================================================

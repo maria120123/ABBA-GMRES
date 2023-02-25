@@ -2,7 +2,7 @@
 import numpy as np
 
 # %% *********************************************** The ABBA Iterative Methods ***********************************************
-def AB_GMRES(A, B, b, iter, m, n, N_ang, p = 0, stop_rule = 'NO', eta = 0, tau = 1.02, x0 = 0):
+def AB_GMRES(A, B, b, iter, m, n, num_angles, p = 0, stop_rule = 'NO', eta = 0, tau = 1.02, x0 = 0):
     ''' Solver: AB-GMRES
     Solves min || b - A*B*y ||_2 for y in R^[m] where x = B*y with B in R^[n x m] as a right preconditioner.
     
@@ -15,7 +15,7 @@ def AB_GMRES(A, B, b, iter, m, n, N_ang, p = 0, stop_rule = 'NO', eta = 0, tau =
     iter:       Maximum number of iterations.
     m:          Total number of pixels in the sinogram (length of b).
     n:          Total number of pixels in the image (length of x).
-    N_ang:      Total number of view angles in the CT setup.
+    num_angles: Total number of view angles in the CT setup.
     p:          Restart parameter, number of iterations before restart (default is set to not restart).
     stop_rule: 'DP' for Discrepancy Principle and 'NCP' for Normalized Cumulative Periodogram (default is set to not use a stopping rule).
     eta:        Relative noise level (default is set to 0.0).
@@ -92,7 +92,7 @@ def AB_GMRES(A, B, b, iter, m, n, N_ang, p = 0, stop_rule = 'NO', eta = 0, tau =
                     return X, R
             
             elif stop_rule == 'NCP':
-                Nk = NCP(R[:,k-1], m, N_ang)
+                Nk = NCP(R[:,k-1], m, num_angles)
                 if l == 0 and k == 1:
                     Nk_old = Nk
                 else:
@@ -111,7 +111,7 @@ def AB_GMRES(A, B, b, iter, m, n, N_ang, p = 0, stop_rule = 'NO', eta = 0, tau =
 
     return X, R
 
-def BA_GMRES(A, B, b, iter, m, n, N_ang, p = 0, stop_rule = 'NO', eta = 0, tau = 1.02, x0 = 0):
+def BA_GMRES(A, B, b, iter, m, n, num_angles, p = 0, stop_rule = 'NO', eta = 0, tau = 1.02, x0 = 0):
     ''' Solver: BA-GMRES
     Solves min || B*b - B*A*x ||_2  with B in R^[n x m] as a left preconditioner.
     
@@ -124,7 +124,7 @@ def BA_GMRES(A, B, b, iter, m, n, N_ang, p = 0, stop_rule = 'NO', eta = 0, tau =
     iter:       Maximum number of iterations.
     m:          Total number of pixels in the sinogram (length of b).
     n:          Total number of pixels in the image (length of x).
-    N_ang:      Total number of view angles in the CT setup.
+    num_angles: Total number of view angles in the CT setup.
     p:          Restart parameter, number of iterations before restart (default is set to not restart).
     stop_rule: 'DP' for Discrepancy Principle and 'NCP' for Normalized Cumulative Periodogram (default is set to not use a stopping rule).
     eta:        Relative noise level (default is set to 0.0).
@@ -205,7 +205,7 @@ def BA_GMRES(A, B, b, iter, m, n, N_ang, p = 0, stop_rule = 'NO', eta = 0, tau =
                     return X, R
             
             elif stop_rule == 'NCP':
-                Nk = NCP(R[:,k-1], m, N_ang)
+                Nk = NCP(R[:,k-1], m, num_angles)
                 if l == 0 and k == 1:
                     Nk_old = Nk
                 else:
@@ -223,17 +223,17 @@ def BA_GMRES(A, B, b, iter, m, n, N_ang, p = 0, stop_rule = 'NO', eta = 0, tau =
 
     return X, R
 
-def NCP(r, m, N_ang):
+def NCP(r, m, num_angles):
     ''' 
     Stopping criteria: Normalized Cumulative Periodogram
 
     INPUTS
     r:      Residual vector for i'th iteration.
     m:      Number of pixels in the sinogram.
-    N_ang:  The number of view angles.
+    num_angles:  The number of view angles.
     '''
     
-    nt = int(N_ang)
+    nt = int(num_angles)
     nnp = int(m / nt)
     q = int(np.floor(nnp/2))
     c_white = np.linspace(1,q,q)/q

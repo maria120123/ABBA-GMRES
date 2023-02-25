@@ -8,13 +8,13 @@ import GPUtil
 
 class ct_tigre:
     '''Setup for TIGRE toolbox'''
-    def __init__(self, N, N_ang, N_det, angles, fp_model, bp_model, proj_geom, source_origin, source_det, det_width):
+    def __init__(self, num_pixels, num_angles, num_dets, angles, fp_model, bp_model, proj_geom, source_origin, source_det, det_width):
         '''Class setup for a 2D X-ray CT problem in TIGRE  
 
         ----- INPUT -----
-        N:              Number of pixels in an N x N image
-        N_ang:          Number of angles
-        N_det:          Number of detector elements
+        num_pixels:     Number of pixels in an num_pixels x num_pixels image
+        num_angles:     Number of angles
+        num_dets:       Number of detector elements
         angles:         Angles in radians
         fp_model:       Projection model, choose between 'Siddon' (line) and 'interpolated' (Joseph)
         bp_model:       Projection model, choose between 'matched' and 'FDK'
@@ -24,16 +24,16 @@ class ct_tigre:
         det_width:      Detector width
         '''
         # Set fields
-        self.N = N
-        self.N_ang = N_ang
-        self.N_det = N_det
-        self.proj_angles = angles
-        self.m = N_ang*N_det
-        self.n = N**2
-        self.proj_geom = proj_geom
-        self.det_width = det_width
-        self.fp_model = fp_model
-        self.bp_model = bp_model
+        self.num_pixels     = num_pixels
+        self.num_angles     = num_angles
+        self.num_dets       = num_dets
+        self.proj_angles    = angles
+        self.m              = num_angles*num_dets
+        self.n              = num_pixels**2
+        self.proj_geom      = proj_geom
+        self.det_width      = det_width
+        self.fp_model       = fp_model
+        self.bp_model       = bp_model
 
         # Check if there is a GPU connected to the host
         n_device, = np.shape(GPUtil.getAvailable())
@@ -50,13 +50,13 @@ class ct_tigre:
         self.geo.DSO = source_origin
 
         # Detector parameters
-        self.geo.nDetector = np.array([1, self.N_det])                      # number of pixels
+        self.geo.nDetector = np.array([1, self.num_dets])                      # number of pixels
         self.geo.dDetector = np.array([self.geo.dVoxel[0], self.det_width]) # size of each pixel in mm
         self.geo.sDetector = self.geo.nDetector * self.geo.dDetector        # total size of the detector in mm
 
         # Image parameters 
-        self.geo.nVoxel = np.array([1, self.N, self.N])     # number of voxels
-        self.geo.sVoxel = np.array([1, self.N, self.N])     # total size of the image in mm
+        self.geo.nVoxel = np.array([1, self.num_pixels, self.num_pixels])     # number of voxels
+        self.geo.sVoxel = np.array([1, self.num_pixels, self.num_pixels])     # total size of the image in mm
         self.geo.dVoxel = self.geo.sVoxel / self.geo.nVoxel # size of each voxel in mm
 
         # Offset
@@ -80,13 +80,13 @@ class ct_tigre:
 
 class ct_astra:
     '''Setup for ASTRA toolbox'''
-    def __init__(self, N, N_ang, N_det, angles, proj_model, proj_geom, source_origin, origin_det, det_width, GPU = True):
+    def __init__(self, num_pixels, num_angles, num_dets, angles, proj_model, proj_geom, source_origin, origin_det, det_width, GPU = True):
         '''Class setup for a 2D X-ray CT problem in ASTRA
 
         ----- INPUT -----
-        N:              Number of pixels in an N x N image
-        N_ang:          Number of angles
-        N_det:          Number of detector elements
+        num_pixels:     Number of pixels in an num_pixels x num_pixels image
+        num_angles:     Number of angles
+        num_dets:       Number of detector elements
         angles:         Angles in radians
         proj_model:     Projection model for CPU version choose between 'line', 'strip', or 'linear' (Joseph) 
                             and for GPU we only have Joseph
@@ -97,14 +97,14 @@ class ct_astra:
         det_width:      Detector width
         '''
         # Set fields
-        self.N = N
-        self.N_ang = N_ang
-        self.N_det = N_det
-        self.proj_angles = angles
-        self.m = N_ang*N_det
-        self.n = N**2
-        self.vol_geom  = astra.create_vol_geom(self.N,self.N)
-        self.GPU = GPU
+        self.num_pixels     = num_pixels
+        self.num_angles     = num_angles
+        self.num_dets       = num_dets
+        self.proj_angles    = angles
+        self.m              = num_angles*num_dets
+        self.n              = num_pixels**2
+        self.vol_geom       = astra.create_vol_geom(self.num_pixels,self.num_pixels)
+        self.GPU            = GPU
 
         # Check if there is a GPU connected to the host
         if GPU == True:
@@ -116,7 +116,7 @@ class ct_astra:
         # SETUP PROJECTION GEOMETRY
         # Parallel beam geometry
         if proj_geom == 'parallel': 
-            self.proj_geom = astra.create_proj_geom(proj_geom, det_width, N_det, self.proj_angles)
+            self.proj_geom = astra.create_proj_geom(proj_geom, det_width, num_dets, self.proj_angles)
             if GPU == True:
                 self.proj_id   = astra.create_projector('cuda', self.proj_geom, self.vol_geom)
             else:
@@ -127,7 +127,7 @@ class ct_astra:
             if proj_model == 'linear' and GPU == False:
                 raise Exception("Fan beam geometry using the CPU can only handle strip and line")
 
-            self.proj_geom = astra.create_proj_geom(proj_geom,det_width,N_det,self.proj_angles,source_origin,origin_det)
+            self.proj_geom = astra.create_proj_geom(proj_geom,det_width,num_dets,self.proj_angles,source_origin,origin_det)
             if GPU == True:
                 self.proj_id   = astra.create_projector('cuda', self.proj_geom, self.vol_geom)
             else:
