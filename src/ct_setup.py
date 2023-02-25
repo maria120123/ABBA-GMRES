@@ -37,6 +37,12 @@ class ct_tigre:
         self.det_width = det_width
         self.fp_model = fp_model
         self.bp_model = bp_model
+
+        # Check if there is a GPU connected to the host
+        n_device, = np.shape(GPUtil.getAvailable())
+
+        if n_device < 1:
+            raise Exception("No GPUs available.")
         
         # Define Geometry
         self.geo  = tigre.geometry()
