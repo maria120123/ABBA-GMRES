@@ -110,10 +110,11 @@ class ct_astra:
         self.GPU = GPU
 
         # Check if there is a GPU connected to the host
-        n_device, = np.shape(GPUtil.getAvailable())
+        if GPU == True:
+            n_device, = np.shape(GPUtil.getAvailable())
 
-        if n_device < 1:
-            raise Exception("No GPUs available.")
+            if n_device < 1:
+                raise Exception("No GPUs available.")
 
         # SETUP PROJECTION GEOMETRY
         # Parallel beam geometry
