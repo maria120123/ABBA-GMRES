@@ -3,7 +3,7 @@ import numpy as np
 import time
 
 # %% *********************************************** The ABBA Iterative Methods ***********************************************
-def AB_GMRES(A, B, b, x0, iter, ct, p, stop_rule = 'NO', eta = 0, tau = 0):
+def AB_GMRES(A, B, b, iter, ct, p = 0, stop_rule = 'NO', eta = 0, tau = 0, x0 = 0):
     ''' Solver: AB-GMRES
     Solves min || b - A*B*y ||_2 for y in R^[m] where x = B*y with B in R^[n x m] as a right preconditioner.
     
@@ -27,8 +27,16 @@ def AB_GMRES(A, B, b, x0, iter, ct, p, stop_rule = 'NO', eta = 0, tau = 0):
     
     '''
     print("\nAB-GMRES is running")
+
+    # Check if GMRES should be restarted
+    if p == 0:
+        p = iter
+
+    # Check if a starting guess was provided
+    if ~isinstance(x0, np.ndarray):
+        x0 = np.zeros((ct.n,)).astype("float32")
     
-    # Make sure p is a multiplum of iter else change iter
+    # Make sure p is a divisor of iter else change iter
     L = np.floor(iter/p).astype(int)
     if np.mod(iter,p) != 0:
         iter = L*p
@@ -106,7 +114,7 @@ def AB_GMRES(A, B, b, x0, iter, ct, p, stop_rule = 'NO', eta = 0, tau = 0):
 
     return X, R
 
-def BA_GMRES(A, B, b, x0, iter, ct, p, stop_rule = 'NO', eta = 0, tau = 0):
+def BA_GMRES(A, B, b, iter, ct, p = 0, stop_rule = 'NO', eta = 0, tau = 0, x0 = 0):
     ''' Solver: BA-GMRES
     Solves min || B*b - B*A*x ||_2  with B in R^[n x m] as a left preconditioner.
     
@@ -131,7 +139,15 @@ def BA_GMRES(A, B, b, x0, iter, ct, p, stop_rule = 'NO', eta = 0, tau = 0):
     '''
     print("\nBA-GMRES is running")
     
-    # Make sure p is a multiplum of iter else change iter
+    # Check if GMRES should be restarted
+    if p == 0:
+        p = iter
+
+    # Check if a starting guess was provided
+    if ~isinstance(x0, np.ndarray):
+        x0 = np.zeros((ct.n,)).astype("float32")
+
+    # Make sure p is a divisor of iter else change iter
     L = np.floor(iter/p).astype(int)
     if np.mod(iter,p) != 0:
         iter = L*p

@@ -23,16 +23,14 @@ b       = bexact + e
 # Setup for ABBA methods
 A           = fp_astra(ex1.CT_ASTRA)                         # The forward projector
 B           = bp_astra(ex1.CT_ASTRA)                         # The back projector
-x0          = np.zeros((ex1.CT_ASTRA.n,)).astype("float32")  # Initial guess of the solution
 iter        = 100                                            # Maximum number of iterations
-p           = iter                                           # Restart parameter, if p = iter we do not use restart
 
 # Using no stopping rule
-X_BA, R_BA = BA_GMRES(A,B,b,x0,iter,ex1.CT_ASTRA,p)     # Solving the CT problem with BA-GMRES
+X_BA, R_BA = BA_GMRES(A, B, b, iter, ex1.CT_ASTRA)     # Solving the CT problem with BA-GMRES
 
 # Computing the relative error between the solutions x_i and the true solution
-res = np.zeros((iter,1))
-for i in range(0,iter):
+res = np.zeros((iter, 1))
+for i in range(0, iter):
     res[i] = np.linalg.norm(ex1.X.reshape(-1) - X_BA[:,i])/np.linalg.norm(ex1.X.reshape(-1))
 val = np.min(res)
 idx = np.argmin(res)
@@ -41,7 +39,7 @@ idx = np.argmin(res)
 stop_rule   = 'DP'          # The stopping criteria, DP = discrepancy principal
 eta         = np.std(e)     # The noise level, when using DP as stopping criteria
 tau         = 1.02          # Safety factor for DP
-X_BA_dp, R_BA_dp = BA_GMRES(A,B,b,x0,iter,ex1.CT_ASTRA,p,stop_rule,eta,tau)     # Solving the CT problem with BA-GMRES
+X_BA_dp, R_BA_dp = BA_GMRES(A, B, b, iter, ex1.CT_ASTRA, stop_rule = stop_rule, eta = eta, tau = tau)     # Solving the CT problem with BA-GMRES
 
 # Computing the relative error between the solutions x_i and the true solution
 iter_dp = np.shape(X_BA_dp)[1] - 1
@@ -53,7 +51,7 @@ idx_dp = np.argmin(res_dp)
 
 # Using DP as the stopping rule
 stop_rule   = 'NCP'      # The stopping criteria, NCP = normalized cumulative periodogram
-X_BA_ncp, R_BA_ncp = BA_GMRES(A,B,b,x0,iter,ex1.CT_ASTRA,p,stop_rule,eta,tau)     # Solving the CT problem with BA-GMRES
+X_BA_ncp, R_BA_ncp = BA_GMRES(A, B, b, iter, ex1.CT_ASTRA, stop_rule = stop_rule, eta = eta, tau = tau)     # Solving the CT problem with BA-GMRES
 
 # Computing the relative error between the solutions x_i and the true solution
 iter_ncp = np.shape(X_BA_ncp)[1] - 1
@@ -63,6 +61,7 @@ for i in range(0,iter_ncp):
 val_ncp = np.min(res_ncp)
 idx_ncp = np.argmin(res_ncp)
 
+# Plotting
 plt.figure()
 plt.plot(range(0,iter),res,'g-')
 plt.plot(range(0,iter_dp),res_dp,'r-')

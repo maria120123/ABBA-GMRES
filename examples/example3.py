@@ -26,12 +26,11 @@ b       = bexact + e
 # Setup for ABBA methods
 A           = fp_astra(ex1.CT_ASTRA)                         # The forward projector
 B           = bp_astra(ex1.CT_ASTRA)                         # The back projector
-x0          = np.zeros((ex1.CT_ASTRA.n,)).astype("float32")  # Initial guess of the solution
 iter        = 100                                            # Maximum number of iterations
 
 # Use restart with p as a multiplum of the iterations
 p = 5       # Restart parameter, if p = iter we do not use restart. 
-X_BA_p5, R_BA_p5 = BA_GMRES(A,B,b,x0,iter,ex1.CT_ASTRA,p)     # Solving the CT problem with BA-GMRES for p = 5
+X_BA_p5, R_BA_p5 = BA_GMRES(A,B,b,iter,ex1.CT_ASTRA,p)     # Solving the CT problem with BA-GMRES for p = 5
 
 # Computing the relative error between the solutions x_i and the true solution
 res_p5 = np.zeros((iter,1))
@@ -41,8 +40,8 @@ val_p5 = np.min(res_p5)
 idx_p5 = np.argmin(res_p5)
 
 # Use restart with p not being a multiplum of the iterations
-p = 6       # Restart parameter, if p = iter we do not use restart. 
-X_BA_p6, R_BA_p6 = BA_GMRES(A,B,b,x0,iter,ex1.CT_ASTRA,p)     # Solving the CT problem with BA-GMRES for p = 6
+p = 6       # Restart parameter, if p = iter or is not included, we do not use restart. 
+X_BA_p6, R_BA_p6 = BA_GMRES(A,B,b,iter,ex1.CT_ASTRA,p)     # Solving the CT problem with BA-GMRES for p = 6
 
 # Computing the relative error between the solutions x_i and the true solution
 iter_p6 = np.shape(X_BA_p6)[1] - 1
