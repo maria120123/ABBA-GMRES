@@ -15,10 +15,10 @@ We provide operators from the public libraries ASTRA [5] and TIGRE [6]...
 ### Astra forward projectors
 |      | Line    | Strip   | Linear |
 |:---- |:--------|:--------|:-------|
-|     Parallel beam                 |
+|     Parallel beam                ||
 |CPU   | &check; | &check; | &check;|
 |GPU   | &cross; | &cross; | &check;|
-|     Fan beam                      |
+|     Fan beam                     ||
 |CPU   | &check; | &check; | &cross;|
 |GPU   | &cross; | &cross; | &check;|
 
