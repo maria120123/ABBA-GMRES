@@ -27,18 +27,18 @@ e       = rnl*np.linalg.norm(bexact)*e1
 b       = bexact + e
 
 # Setup for ABBA methods
-A           = fp_astra(ct)                         # The forward projector
-B           = bp_astra(ct)                         # The back projector
-iter        = 100                                            # Maximum number of iterations
+A       = fp_astra(ct)    # The forward projector
+B       = bp_astra(ct)    # The back projector
+iter    = 100             # Maximum number of iterations
 
 # Use restart with p as a divisor of the iterations
 # -----------------------------------------------------------
-p = 5       # Restart parameter, if p = iter we do not use restart. 
+p = 5 # Restart parameter, if p = iter or is not included, we do not use restart. 
 X_BA_p5, R_BA_p5 = BA_GMRES(A, B, b, iter, ct.m, ct.n, ct.num_angles, p)
 
 # Use restart with p not being a divisor of the iterations
 # -----------------------------------------------------------
-p = 6       # Restart parameter, if p = iter or is not included, we do not use restart. 
+p = 6 # Restart parameter, if p = iter or is not included, we do not use restart. 
 X_BA_p6, R_BA_p6 = BA_GMRES(A, B, b, iter, ct.m, ct.n, ct.num_angles, p)
 
 

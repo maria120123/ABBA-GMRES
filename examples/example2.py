@@ -23,13 +23,13 @@ e       = rnl*np.linalg.norm(bexact)*e1
 b       = bexact + e
 
 # Setup for ABBA methods
-A           = fp_astra(ct)               # The forward projector
-B           = bp_astra(ct)               # The back projector
-iter        = 50                                   # Maximum number of iterations
+A       = fp_astra(ct)     # The forward projector
+B       = bp_astra(ct)     # The back projector
+iter    = 50               # Maximum number of iterations
 
 # Calls to AB- and BA-GMRES
-X_AB, R_AB = AB_GMRES(A,B,b,iter,ct.m, ct.n, ct.num_angles)     # Solving the CT problem with AB-GMRES
-X_BA, R_BA = BA_GMRES(A,B,b,iter,ct.m, ct.n, ct.num_angles)     # Solving the CT problem with BA-GMRES
+X_AB, R_AB = AB_GMRES(A,B,b,iter,ct.m, ct.n, ct.num_angles)
+X_BA, R_BA = BA_GMRES(A,B,b,iter,ct.m, ct.n, ct.num_angles)
 
 
 

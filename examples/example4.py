@@ -24,9 +24,9 @@ e       = rnl*np.linalg.norm(bexact)*e1
 b       = bexact + e
 
 # Setup for ABBA methods
-A           = fp_astra(ct)                         # The forward projector
-B           = bp_astra(ct)                         # The back projector
-iter        = 100                                            # Maximum number of iterations
+A       = fp_astra(ct)      # The forward projector
+B       = bp_astra(ct)      # The back projector
+iter    = 100               # Maximum number of iterations
 
 # Using no stopping rule
 # -------------------------------
@@ -41,7 +41,7 @@ X_BA_dp, R_BA_dp = BA_GMRES(A, B, b, iter, ct.m, ct.n, ct.num_angles, stop_rule 
 
 # Using NCP as the stopping rule
 # -------------------------------
-stop_rule   = 'NCP'      # The stopping criteria, NCP = normalized cumulative periodogram
+stop_rule   = 'NCP'         # The stopping criteria, NCP = normalized cumulative periodogram
 X_BA_ncp, R_BA_ncp = BA_GMRES(A, B, b, iter, ct.m, ct.n, ct.num_angles, stop_rule = stop_rule, eta = eta, tau = tau)
 
 
