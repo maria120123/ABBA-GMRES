@@ -10,7 +10,7 @@ The ABBA GMRES methods have the following features
 
 ## Package requirements
 The following Python packages are required for the toolbox to work properly:
-- numpy
+- [numpy](https://numpy.org/install/)
 - [astra](https://github.com/astra-toolbox/astra-toolbox)
 - [tigre](https://github.com/CERN/TIGRE)
 - [GPUtil](https://pypi.org/project/GPUtil/)
@@ -59,7 +59,6 @@ This package allows the user to provide its own forward and backward projectors.
 
 ```python
 class custom_projector:
-
     # Compute matrix-vector product
     #   y = A*x
     def __matmul__(self,x):
