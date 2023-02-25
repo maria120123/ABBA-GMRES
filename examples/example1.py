@@ -6,11 +6,18 @@ Author: Maria Knudsen (February 2023)
 # %%
 # Load packages
 import sys
-sys.path.insert(0, '/Users/s171246/Documents/ABBA-GMRES/src')
+import os
+
+# Set path to scripts
+scr_path = os.path.realpath(os.path.dirname(__file__))
+sys.path.insert(0, scr_path + '/../src')
+
+# Import the ramaining packages
 from ct_setup import *
 import csv
 import numpy as np
 import matplotlib.pyplot as plt
+
 
 # Load data
 reader = csv.reader(open('X_128_shepplogan_rnl03.csv'), delimiter=",")
