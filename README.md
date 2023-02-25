@@ -27,8 +27,13 @@ We provide examples of each feature in the toolbox:
 
 ## Citaitons
 [1] Ken Hayami, et. al., _GMRES methods for least squares problems_
+
 [2] Per Christian Hansen, et. al., _GMRES methods for tomographic reconstruction with an unmatched back projector_
+
 [3] Per Christian Hansen, _Discrete Inverse Problems_
+
 [4] Per Christian Hansen, _Implementation of the NCP method for CT problems_
+
 [5] ASTRA: https://github.com/astra-toolbox/astra-toolbox
+
 [6] TIGRE: https://github.com/CERN/TIGRE
