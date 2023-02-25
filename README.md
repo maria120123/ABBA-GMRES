@@ -24,7 +24,7 @@ We provide operators from the public libraries ASTRA [5] and TIGRE [6]...
 
 
 ### Unmatchedness ofprojectors
-Depending on which predefined operators 
+The unmathced normal equations arise depending on which predefined operators are used. The following table shows a summary of what to expect when using the pre defined operators from this package.
 | Package   | Parallel beam | Fan beam  |
 |:----------|:--------------|:----------|
 | ASTRA CPU | Matched       | Matched   |    
