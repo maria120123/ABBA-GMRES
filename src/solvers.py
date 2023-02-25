@@ -242,7 +242,7 @@ def NCP(r, m, N_ang):
     R = r.reshape(nnp,nt)
     for j in range(0,nt):
         RKH = np.fft.fft(R[:,j])
-        pk = abs(RKH[0:q+1]) #+1?
+        pk = abs(RKH[0:q+1])
         c = np.cumsum(pk[1:])/np.sum(pk[1:])
         C[:,j] = c
 
