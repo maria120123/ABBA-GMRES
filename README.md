@@ -12,6 +12,27 @@ The ABBA GMRES methods have the following features
 We provide operators from the public libraries ASTRA [5] and TIGRE [6]...
 
 
+### Astra forward projectors
+|      | Line    | Strip   | Linear |
+|:---- |:--------|:--------|:-------|
+|     Parallel beam                 |
+|CPU   | &check; | &check; | &check;|
+|GPU   | &cross; | &cross; | &check;|
+|     Fan beam                      |
+|CPU   | &check; | &check; | &cross;|
+|GPU   | &cross; | &cross; | &check;|
+
+
+### Unmatchedness ofprojectors
+Depending on which predefined operators 
+| Package   | Parallel beam | Fan beam  |
+|:----------|:--------------|:----------|
+| ASTRA CPU | Matched       | Matched   |    
+| ASTRA GPU | Unmatched     | Unmatched |
+| TIGRE GPU | Both          | Both      |
+
+
+
 ## User defined operators
 This package allows the user to provide its own forward and backward projectors.
 
