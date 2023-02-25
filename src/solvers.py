@@ -2,23 +2,25 @@
 import numpy as np
 
 # %% *********************************************** The ABBA Iterative Methods ***********************************************
-def AB_GMRES(A, B, b, iter, ct, p = 0, stop_rule = 'NO', eta = 0, tau = 1.02, x0 = 0):
+def AB_GMRES(A, B, b, iter, m, n, N_ang, p = 0, stop_rule = 'NO', eta = 0, tau = 1.02, x0 = 0):
     ''' Solver: AB-GMRES
     Solves min || b - A*B*y ||_2 for y in R^[m] where x = B*y with B in R^[n x m] as a right preconditioner.
     
     Cite: Hansen et al., "GMRES methods for tomographic reconstruction with an unmatched back projector"
     
     INPUT
-    A:    Forward projection (can both be a dense and abstract matrix)
-    B:    Back projection (can both be a dense and abstract matrix)
-    b:    The sinogram
-    x0:   Initial guess
-    iter: Maximum number of iterations the solver must take.
-    ct:   The class describing the CT problem
-    p:    Restart parameter, number of iterations before restart
-    eta:  Relative noise level
-    tau:  Safety factor in DP
-    stop_rule: 'DP' for Discrepancy Principle and 'NCP' for Normalized Cumulative Periodogram
+    A:          Forward projection operator (abstract matrix with __matmul__ defined).
+    B:          Back projection (abstract matrix with __matmul__ defined).
+    b:          The sinogram.
+    iter:       Maximum number of iterations.
+    m:          Total number of pixels in the sinogram (length of b).
+    n:          Total number of pixels in the image (length of x).
+    N_ang:      Total number of view angles in the CT setup.
+    p:          Restart parameter, number of iterations before restart (default is set to not restart).
+    stop_rule: 'DP' for Discrepancy Principle and 'NCP' for Normalized Cumulative Periodogram (default is set to not use a stopping rule).
+    eta:        Relative noise level (default is set to 0.0).
+    tau:        Safety factor in DP (default set to 1.02).
+    x0:         Initial guess (default is set to zero-vector).
     
     OUTPUT
     X: Solution matrix, k'th column is the solution to the k'th iteration
@@ -33,16 +35,12 @@ def AB_GMRES(A, B, b, iter, ct, p = 0, stop_rule = 'NO', eta = 0, tau = 1.02, x0
 
     # Check if a starting guess was provided
     if ~isinstance(x0, np.ndarray):
-        x0 = np.zeros((ct.n,)).astype("float32")
+        x0 = np.zeros((n,)).astype("float32")
     
     # Make sure p is a divisor of iter else change iter
     L = np.floor(iter/p).astype(int)
     if np.mod(iter,p) != 0:
         iter = L*p
-
-    # Initializations
-    m = ct.m
-    n = ct.n
 
     X = np.zeros((n,iter+1), dtype='float32')
     X[:,0] = x0
@@ -94,7 +92,7 @@ def AB_GMRES(A, B, b, iter, ct, p = 0, stop_rule = 'NO', eta = 0, tau = 1.02, x0
                     return X, R
             
             elif stop_rule == 'NCP':
-                Nk = NCP(R[:,k-1],ct)
+                Nk = NCP(R[:,k-1], m, N_ang)
                 if l == 0 and k == 1:
                     Nk_old = Nk
                 else:
@@ -113,27 +111,29 @@ def AB_GMRES(A, B, b, iter, ct, p = 0, stop_rule = 'NO', eta = 0, tau = 1.02, x0
 
     return X, R
 
-def BA_GMRES(A, B, b, iter, ct, p = 0, stop_rule = 'NO', eta = 0, tau = 1.02, x0 = 0):
+def BA_GMRES(A, B, b, iter, m, n, N_ang, p = 0, stop_rule = 'NO', eta = 0, tau = 1.02, x0 = 0):
     ''' Solver: BA-GMRES
     Solves min || B*b - B*A*x ||_2  with B in R^[n x m] as a left preconditioner.
     
     Cite: Hansen et al., "GMRES methods for tomographic reconstruction with an unmatched back projector"
     
     INPUT
-    A:    Forward projection (can both be a dense and abstract matrix)
-    B:    Back projection (can both be a dense and abstract matrix)
-    b:    The sinogram/measurements
-    x0:   Initial guess
-    iter: Maximum number of iterations the solver must take.
-    ct:   The class describing the CT problem
-    p:    Restart parameter, number of iterations before restart
-    eta:  Relative noise level
-    tau:  Safety factor in DP
-    stop_rule: 'DP' for Discrepancy Principle and 'NCP' for Normalized Cumulative Periodogram
+    A:          Forward projection operator (abstract matrix with __matmul__ defined).
+    B:          Back projection (abstract matrix with __matmul__ defined).
+    b:          The sinogram.
+    iter:       Maximum number of iterations.
+    m:          Total number of pixels in the sinogram (length of b).
+    n:          Total number of pixels in the image (length of x).
+    N_ang:      Total number of view angles in the CT setup.
+    p:          Restart parameter, number of iterations before restart (default is set to not restart).
+    stop_rule: 'DP' for Discrepancy Principle and 'NCP' for Normalized Cumulative Periodogram (default is set to not use a stopping rule).
+    eta:        Relative noise level (default is set to 0.0).
+    tau:        Safety factor in DP (default set to 1.02).
+    x0:         Initial guess (default is set to zero-vector).
     
     OUTPUT
     X: Solution matrix, k'th column is the solution to the k'th iteration
-    R: Residual matrix, k'th column corresponds to the residuals for the k'th iteration
+    R: Residual matrix, k'th column corresponds to the residuals for the k'th iteration 
     
     '''
     print("\nBA-GMRES is running")
@@ -144,7 +144,7 @@ def BA_GMRES(A, B, b, iter, ct, p = 0, stop_rule = 'NO', eta = 0, tau = 1.02, x0
 
     # Check if a starting guess was provided
     if ~isinstance(x0, np.ndarray):
-        x0 = np.zeros((ct.n,)).astype("float32")
+        x0 = np.zeros((n,)).astype("float32")
 
     # Make sure p is a divisor of iter else change iter
     L = np.floor(iter/p).astype(int)
@@ -152,8 +152,6 @@ def BA_GMRES(A, B, b, iter, ct, p = 0, stop_rule = 'NO', eta = 0, tau = 1.02, x0
         iter = L*p
 
     # Initializations
-    m = ct.m
-    n = ct.n
     b = np.float32(b)
 
     X = np.zeros((n,iter+1), dtype='float32')
@@ -207,7 +205,7 @@ def BA_GMRES(A, B, b, iter, ct, p = 0, stop_rule = 'NO', eta = 0, tau = 1.02, x0
                     return X, R
             
             elif stop_rule == 'NCP':
-                Nk = NCP(R[:,k-1],ct)
+                Nk = NCP(R[:,k-1], m, N_ang)
                 if l == 0 and k == 1:
                     Nk_old = Nk
                 else:
@@ -225,17 +223,18 @@ def BA_GMRES(A, B, b, iter, ct, p = 0, stop_rule = 'NO', eta = 0, tau = 1.02, x0
 
     return X, R
 
-def NCP(r,ct):
+def NCP(r, m, N_ang):
     ''' 
     Stopping criteria: Normalized Cumulative Periodogram
 
-    INPUT
-    r:  Residual vector for i'th iteration
-    ct: The class for the CT problem
+    INPUTS
+    r:      Residual vector for i'th iteration.
+    m:      Number of pixels in the sinogram.
+    N_ang:  The number of view angles.
     '''
     
-    nt = int(ct.N_ang)
-    nnp = int(ct.m / nt)
+    nt = int(N_ang)
+    nnp = int(m / nt)
     q = int(np.floor(nnp/2))
     c_white = np.linspace(1,q,q)/q
     C = np.zeros((q,nt))

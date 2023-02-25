@@ -15,28 +15,31 @@ from solvers import *
 import matplotlib.pyplot as plt
 import numpy as np
 
+# Reference to CT setup
+ct = ex1.CT_ASTRA
+
 # Create noisy sinogram
 rnl     = 0.03
-e0      = np.random.normal(0.0, 1.0, ex1.CT_ASTRA.m)
+e0      = np.random.normal(0.0, 1.0, ct.m)
 e1      = e0/np.linalg.norm(e0)
 bexact  = ex1.Bexact.reshape(-1)
 e       = rnl*np.linalg.norm(bexact)*e1
 b       = bexact + e
 
 # Setup for ABBA methods
-A           = fp_astra(ex1.CT_ASTRA)                         # The forward projector
-B           = bp_astra(ex1.CT_ASTRA)                         # The back projector
+A           = fp_astra(ct)                         # The forward projector
+B           = bp_astra(ct)                         # The back projector
 iter        = 100                                            # Maximum number of iterations
 
 # Use restart with p as a divisor of the iterations
 # -----------------------------------------------------------
 p = 5       # Restart parameter, if p = iter we do not use restart. 
-X_BA_p5, R_BA_p5 = BA_GMRES(A,B,b,iter,ex1.CT_ASTRA,p)
+X_BA_p5, R_BA_p5 = BA_GMRES(A, B, b, iter, ct.m, ct.n, ct.N_ang, p)
 
 # Use restart with p not being a divisor of the iterations
 # -----------------------------------------------------------
 p = 6       # Restart parameter, if p = iter or is not included, we do not use restart. 
-X_BA_p6, R_BA_p6 = BA_GMRES(A,B,b,iter,ex1.CT_ASTRA,p)
+X_BA_p6, R_BA_p6 = BA_GMRES(A, B, b, iter, ct.m, ct.n, ct.N_ang, p)
 
 
 # ===============================================================================================

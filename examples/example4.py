@@ -12,34 +12,37 @@ from solvers import *
 import matplotlib.pyplot as plt
 import numpy as np
 
+# Reference to CT setup
+ct = ex1.CT_ASTRA
+
 # Create noisy sinogram
 rnl     = 0.03
-e0      = np.random.normal(0.0, 1.0, ex1.CT_ASTRA.m)
+e0      = np.random.normal(0.0, 1.0, ct.m)
 e1      = e0/np.linalg.norm(e0)
 bexact  = ex1.Bexact.reshape(-1)
 e       = rnl*np.linalg.norm(bexact)*e1
 b       = bexact + e
 
 # Setup for ABBA methods
-A           = fp_astra(ex1.CT_ASTRA)                         # The forward projector
-B           = bp_astra(ex1.CT_ASTRA)                         # The back projector
+A           = fp_astra(ct)                         # The forward projector
+B           = bp_astra(ct)                         # The back projector
 iter        = 100                                            # Maximum number of iterations
 
 # Using no stopping rule
 # -------------------------------
-X_BA, R_BA = BA_GMRES(A, B, b, iter, ex1.CT_ASTRA)
+X_BA, R_BA = BA_GMRES(A, B, b, iter, ct.m, ct.n, ct.N_ang)
 
 # Using DP as the stopping rule
 # -------------------------------
 stop_rule   = 'DP'          # The stopping criteria, DP = discrepancy principal
 eta         = np.std(e)     # The noise level, when using DP as stopping criteria
 tau         = 1.02          # Safety factor for DP
-X_BA_dp, R_BA_dp = BA_GMRES(A, B, b, iter, ex1.CT_ASTRA, stop_rule = stop_rule, eta = eta, tau = tau)
+X_BA_dp, R_BA_dp = BA_GMRES(A, B, b, iter, ct.m, ct.n, ct.N_ang, stop_rule = stop_rule, eta = eta, tau = tau)
 
 # Using NCP as the stopping rule
 # -------------------------------
 stop_rule   = 'NCP'      # The stopping criteria, NCP = normalized cumulative periodogram
-X_BA_ncp, R_BA_ncp = BA_GMRES(A, B, b, iter, ex1.CT_ASTRA, stop_rule = stop_rule, eta = eta, tau = tau)
+X_BA_ncp, R_BA_ncp = BA_GMRES(A, B, b, iter, ct.m, ct.n, ct.N_ang, stop_rule = stop_rule, eta = eta, tau = tau)
 
 
 
