@@ -6,6 +6,8 @@ Author: Maria Knudsen (February 2023)
 '''
 # %%
 # Load packages
+import sys
+sys.path.insert(0, '/Users/s171246/Documents/ABBA-GMRES/src')
 from ct_setup import *
 import csv
 import numpy as np
@@ -35,10 +37,10 @@ proj_model      = 'line'            # The projection model: 'line', 'strip', or 
 proj_geom       = 'fanflat'         # The projection geometry: 'parallel' or 'fanflat'
 gpu             = False             # Construct matched transpose: 'False' or 'True' 
 source_origin   = 1000              # Distance from source to origin/center
-source_det      = 0                 # Distance from origin/center to detector
+origin_det      = 0                 # Distance from origin/center to detector
 det_width       = 1                 # Detector width
 
-CT_ASTRA = ct_astra(num_pixels,num_ang,num_dets,angles,proj_model,proj_geom,gpu,source_origin,source_det,det_width)
+CT_ASTRA = ct_astra(num_pixels,num_ang,num_dets,angles,proj_model,proj_geom,source_origin,origin_det,det_width,gpu)
 
 # Create Sinogram
 _, Bexact = astra.create_sino(X, CT_ASTRA.proj_id)

@@ -26,11 +26,9 @@ B           = bp_astra(ex1.CT_ASTRA)                         # The back projecto
 x0          = np.zeros((ex1.CT_ASTRA.n,)).astype("float32")  # Initial guess of the solution
 iter        = 50                                             # Maximum number of iterations
 p           = iter                                           # Restart parameter, if p = iter we do not use restart
-eta         = np.std(e)                                      # The noise level, when using DP as stopping criteria
-stop_rule   = 'NO'                                           # The stopping criteria ('NO' just means we do not use any stopping rule here)
 
-X_AB, R_AB, T_AB = AB_GMRES(A,B,b,x0,iter,ex1.CT_ASTRA,p,eta,stop_rule)     # Solving the CT problem with AB-GMRES
-X_BA, R_BA, T_BA = BA_GMRES(A,B,b,x0,iter,ex1.CT_ASTRA,p,eta,stop_rule)     # Solving the CT problem with BA-GMRES
+X_AB, R_AB = AB_GMRES(A,B,b,x0,iter,ex1.CT_ASTRA,p)     # Solving the CT problem with AB-GMRES
+X_BA, R_BA = BA_GMRES(A,B,b,x0,iter,ex1.CT_ASTRA,p)     # Solving the CT problem with BA-GMRES
 
 # Computing the relative error between the solutions x_i and the true solution
 res_AB = np.zeros((iter,1))

@@ -3,25 +3,27 @@ import numpy as np
 import time
 
 # %% *********************************************** The ABBA Iterative Methods ***********************************************
-def AB_GMRES(A,B,b,x0,iter,ct,p,eta,stop_rule):
+def AB_GMRES(A, B, b, x0, iter, ct, p, stop_rule = 'NO', eta = 0, tau = 0):
     ''' Solver: AB-GMRES
     Solves min || b - A*B*y ||_2 for y in R^[m] where x = B*y with B in R^[n x m] as a right preconditioner.
     
     Cite: Hansen et al., "GMRES methods for tomographic reconstruction with an unmatched back projector"
     
     INPUT
-    A:    Forward projection (can both be a matrix and a function)                     (TRUE????)
-    B:    Back projection (can both be a matrix and a function)                        (TRUE????)
+    A:    Forward projection (can both be a dense and abstract matrix)
+    B:    Back projection (can both be a dense and abstract matrix)
     b:    The sinogram
-    x0:   Initial guess (default is zero)                                              (KAN LAVE DETTE)
+    x0:   Initial guess
     iter: Maximum number of iterations the solver must take.
     ct:   The class describing the CT problem
     p:    Restart parameter, number of iterations before restart
+    eta:  Relative noise level
+    tau:  Safety factor in DP
+    stop_rule: 'DP' for Discrepancy Principle and 'NCP' for Normalized Cumulative Periodogram
     
     OUTPUT
     X: Solution matrix, k'th column is the solution to the k'th iteration
-    R: Residual matrix, k'th column corresponds to the residuals for the k'th iteration
-    W: The Krylov subspace vectors 
+    R: Residual matrix, k'th column corresponds to the residuals for the k'th iteration 
     
     '''
     print("\nAB-GMRES is running")
@@ -34,13 +36,11 @@ def AB_GMRES(A,B,b,x0,iter,ct,p,eta,stop_rule):
     # Initializations
     m = ct.m
     n = ct.n
-    tau = 1.02
 
     X = np.zeros((n,iter+1), dtype='float32')
     X[:,0] = x0
     Xp = np.zeros((n,p), dtype='float32')
     R = np.zeros((m,iter), dtype='float32')
-    AB_time = np.zeros((iter,1)) # ADDED
 
     r0 = b - A @ x0
     for l in range(0,L):
@@ -51,7 +51,6 @@ def AB_GMRES(A,B,b,x0,iter,ct,p,eta,stop_rule):
         
         # Construct the next Krylov subspace vector and solve the least squares problem
         for k in range(1,p+1):
-            tic = time.time() # ADDED
             print("iteration", str(l*p + k), "out of",str(iter),end="\r")
             
             H = np.zeros((k+1,k),dtype='float32') # Initialize/expand the Hessenberg matrix
@@ -77,21 +76,15 @@ def AB_GMRES(A,B,b,x0,iter,ct,p,eta,stop_rule):
             # The solution x_k and its residual
             Xp[:,k-1] = x0 + (B @ (W[:,:k] @ np.float32(y))).reshape(-1)
             R[:,k-1] = b - A @ Xp[:,k-1]
-
             h_old = H
-            if (l*p + k - 1) == 0:
-                AB_time[l*p + k - 1] = time.time() - tic # ADDED
-            else:
-                AB_time[l*p + k - 1] = time.time() - tic + AB_time[l*p + k - 2] # ADDED
         
             # Stopping rule goes here
             if stop_rule == 'DP':
-                #print(np.linalg.norm(R[:,k-1]))
                 if np.linalg.norm(R[:,k-1]) <= tau*eta*np.sqrt(m):
                     X[:,l*p+1:l*p+k+1] = Xp[:,:k]
                     X = X[:,:l*p + k+1]
                     R = R[:,:l*p + k]
-                    return X, R, AB_time
+                    return X, R
             
             elif stop_rule == 'NCP':
                 Nk = NCP(R[:,k-1],ct)
@@ -103,7 +96,7 @@ def AB_GMRES(A,B,b,x0,iter,ct,p,eta,stop_rule):
                         X[:,l*p+1:l*p+k+1] = Xp[:,:k]
                         X = X[:,:l*p + k+1]
                         R = R[:,:l*p + k]
-                        return X, R, AB_time
+                        return X, R
                     else:
                         Nk_old = Nk
 
@@ -111,29 +104,29 @@ def AB_GMRES(A,B,b,x0,iter,ct,p,eta,stop_rule):
         r0 = R[:,k-1]
         X[:,l*p+1:l*p+k+1] = Xp
 
-    return X, R, AB_time
+    return X, R
 
-def BA_GMRES(A,B,b,x0,iter,ct,p,eta,stop_rule):
+def BA_GMRES(A, B, b, x0, iter, ct, p, stop_rule = 'NO', eta = 0, tau = 0):
     ''' Solver: BA-GMRES
     Solves min || B*b - B*A*x ||_2  with B in R^[n x m] as a left preconditioner.
     
     Cite: Hansen et al., "GMRES methods for tomographic reconstruction with an unmatched back projector"
     
     INPUT
-    A:    Forward projection (can both be a matrix and a function)                     (TRUE????)
-    B:    Back projection (can both be a matrix and a function)                        (TRUE????)
-    b:    The sinogram
-    x0:   Initial guess (default is zero)                                              (KAN LAVE DETTE)
+    A:    Forward projection (can both be a dense and abstract matrix)
+    B:    Back projection (can both be a dense and abstract matrix)
+    b:    The sinogram/measurements
+    x0:   Initial guess
     iter: Maximum number of iterations the solver must take.
     ct:   The class describing the CT problem
     p:    Restart parameter, number of iterations before restart
     eta:  Relative noise level
-    stop_rule: 'DP' for discrepancy principal and 'NCP' for Normalized Cumulative Periodogram
+    tau:  Safety factor in DP
+    stop_rule: 'DP' for Discrepancy Principle and 'NCP' for Normalized Cumulative Periodogram
     
     OUTPUT
     X: Solution matrix, k'th column is the solution to the k'th iteration
     R: Residual matrix, k'th column corresponds to the residuals for the k'th iteration
-    W: The Krylov subspace vectors 
     
     '''
     print("\nBA-GMRES is running")
@@ -147,13 +140,11 @@ def BA_GMRES(A,B,b,x0,iter,ct,p,eta,stop_rule):
     m = ct.m
     n = ct.n
     b = np.float32(b)
-    tau = 1.02 # discrepancy principal parameter
 
     X = np.zeros((n,iter+1), dtype='float32')
     X[:,0] = x0
     Xp = np.zeros((n,p), dtype='float32')
     R = np.zeros((m,iter), dtype='float32')
-    AB_time = np.zeros((iter,1)) # ADDED
     
     residual = b - A @ x0
     for l in range(0,L):
@@ -165,7 +156,6 @@ def BA_GMRES(A,B,b,x0,iter,ct,p,eta,stop_rule):
         
         # Construct the next Krylov subspace vector and solve the least squares problem
         for k in range(1,p+1):
-            tic = time.time() # ADDED
             print("iteration", str(l*p + k), "out of",str(iter),end="\r")
 
             H = np.zeros((k+1,k), dtype='float32') # Initialize/expand the Hessenberg matrix
@@ -191,21 +181,15 @@ def BA_GMRES(A,B,b,x0,iter,ct,p,eta,stop_rule):
             # The solution x_k and its residual
             Xp[:,k-1] = x0 + (W[:,:k] @ np.float32(y)).reshape(-1)
             R[:,k-1] = b - A @ Xp[:,k-1]
-
             h_old = H
-            if (l*p + k - 1) == 0:
-                AB_time[l*p + k - 1] = time.time() - tic # ADDED
-            else:
-                AB_time[l*p + k - 1] = time.time() - tic + AB_time[l*p + k - 2] # ADDED
-
+            
             # Stopping rule goes here
-            if stop_rule == 'DP': # discrepancy principal
-                #print(np.linalg.norm(R[:,k-1]))
+            if stop_rule == 'DP': 
                 if np.linalg.norm(R[:,k-1]) <= tau*eta*np.sqrt(m):
                     X[:,l*p+1:l*p+k+1] = Xp[:,:k]
                     X = X[:,:l*p + k+1]
                     R = R[:,:l*p + k]
-                    return X, R, AB_time
+                    return X, R
             
             elif stop_rule == 'NCP':
                 Nk = NCP(R[:,k-1],ct)
@@ -216,7 +200,7 @@ def BA_GMRES(A,B,b,x0,iter,ct,p,eta,stop_rule):
                         X[:,l*p+1:l*p+k+1] = Xp[:,:k]
                         X = X[:,:l*p + k+1]
                         R = R[:,:l*p + k]
-                        return X, R, AB_time
+                        return X, R
                     else:
                         Nk_old = Nk
 
@@ -224,7 +208,7 @@ def BA_GMRES(A,B,b,x0,iter,ct,p,eta,stop_rule):
         residual = R[:,k-1]
         X[:,l*p+1:l*p+k+1] = Xp
 
-    return X, R, AB_time 
+    return X, R
 
 def NCP(r,ct):
     ''' 

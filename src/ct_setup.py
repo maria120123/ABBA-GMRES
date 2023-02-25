@@ -10,7 +10,7 @@ import time
 
 class ct_tigre:
     '''Setup for TIGRE toolbox'''
-    def __init__(self,N,N_ang,N_det,angles,fp_model,bp_model,proj_geom,source_origin,source_det,det_width):
+    def __init__(self, N, N_ang, N_det, angles, fp_model, bp_model, proj_geom, source_origin, source_det, det_width):
         '''Class setup for a 2D X-ray CT problem in TIGRE  
 
         ----- INPUT -----
@@ -25,6 +25,7 @@ class ct_tigre:
         source_det:     Distance to source detecor in mm
         det_width:      Detector width
         '''
+        # Set fields
         self.N = N
         self.N_ang = N_ang
         self.N_det = N_det
@@ -75,7 +76,7 @@ class ct_tigre:
 
 class ct_astra:
     '''Setup for ASTRA toolbox'''
-    def __init__(self,N,N_ang,N_det,angles,proj_model,proj_geom,GPU,source_origin,source_det,det_width):
+    def __init__(self, N, N_ang, N_det, angles, proj_model, proj_geom, source_origin, origin_det, det_width, GPU = True):
         '''Class setup for a 2D X-ray CT problem in ASTRA
 
         ----- INPUT -----
@@ -88,9 +89,10 @@ class ct_astra:
         proj_geom:      Projection geometry 'parallel' or 'fanflat'
         GPU:            True (use GPU) or False (use CPU)
         source_origin:  Distance between the source and the center of rotation
-        source_det:     Distance between the center of rotation and the detector array
+        origin_det:     Distance between the center of rotation and the detector array
         det_width:      Detector width
         '''
+        # Set fields
         self.N = N
         self.N_ang = N_ang
         self.N_det = N_det
@@ -115,7 +117,7 @@ class ct_astra:
                 print("Fan beam geometry can only handle strip and line")
                 exit()
 
-            self.proj_geom = astra.create_proj_geom(proj_geom,det_width,N_det,self.proj_angles,source_origin,source_det)
+            self.proj_geom = astra.create_proj_geom(proj_geom,det_width,N_det,self.proj_angles,source_origin,origin_det)
             if GPU == True:
                 self.proj_id   = astra.create_projector('cuda', self.proj_geom, self.vol_geom)
             else:
