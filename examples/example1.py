@@ -39,7 +39,7 @@ angles          = np.linspace(ang_start,ang_end,num_angles,dtype=int) / 180 * np
 
 # %% ************************************ ASTRA ************************************
 # Parameters for ASTRA
-proj_model      = 'linear'            # The projection model: 'line', 'strip', or 'linear'
+proj_model      = 'linear'          # The projection model: 'line', 'strip', or 'linear'
 proj_geom       = 'fanflat'         # The projection geometry: 'parallel' or 'fanflat'
 source_origin   = 1000              # Distance from source to origin/center
 origin_det      = 0                 # Distance from origin/center to detector
