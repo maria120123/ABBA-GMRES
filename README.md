@@ -1,5 +1,5 @@
 # ABBA-GMRES
-This Python toolbox consists of the itterative solvers AB- and BA-GMRES methods (ABBA methods) [1,2]. They are able to solve matched and unmatched normal equations arising from X-ray Computed Tomography.
+This Python toolbox consists of the iterative solvers AB- and BA-GMRES methods (ABBA methods) [1,2]. They are able to solve matched and unmatched normal equations arising from X-ray Computed Tomography.
 
 The iterative GMRES methods use a sequence of matrix-vector products, and is therefore able to work with abstract user defined forward and backward projectors.
 
